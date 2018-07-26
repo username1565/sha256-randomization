@@ -12,4 +12,5 @@ This script can be included in HTML by one string:
 to use modified function as old Math.random(), by default.
 
 See example in the source code of https://username1565.github.io/sha256-randomization/index.html
+
 Also see comments in the source code.
