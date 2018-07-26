@@ -1,0 +1,136 @@
+<!--
+	random picture
+	analog of this: https://www.random.org/bitmaps/?format=png&width=256&height=256&zoom=1
+-->
+<canvas id='c'></canvas>
+
+<div id="createPNGButton">
+    <button onclick="putImage()">Make Image fixed for saving</button>        
+</div>
+<a nohref id="link"><img id="MyPix" title="Result PNG. This can be saved now."></img></a>
+
+<script>
+//copy canvas to img tag as png - then this can be saved as image by right-click context menu.
+function putImage()
+{
+  var canvas1 = document.getElementById("c");        
+  if (canvas1.getContext) {
+     var ctx = canvas1.getContext("2d");                
+     var myImage = canvas1.toDataURL("image/png");
+	 //console.log(myImage); //display base64 link in console.log
+  }
+  var imageElement = document.getElementById("MyPix");  
+  imageElement.src = myImage;
+  imageElement.width = canvas1.width;
+  imageElement.height = canvas1.height;
+  
+  
+  
+  //add base64 encoded png to link
+  var link = document.getElementById("link");
+	link.href = myImage;
+	link.download = 'random.png';
+
+  imageElement.title =
+'Result PNG. This can be saved now. \n\n\
+Click to download "random.png"';
+
+}
+
+function update_div(text, add){
+  var div = document.getElementById('div');
+  if(div==null){
+	var div = document.createElement('div');
+	div.id = "div";
+	document.getElementById('createPNGButton').appendChild(div);
+  }
+  else{
+	if(add){
+		div.innerHTML += text;
+	}
+	else{
+		div.innerHTML = text;
+	}
+  }
+}
+</script>
+
+
+
+
+<script>
+//write canvas
+// https://gist.github.com/blixt/f17b47c62508be59987b
+// http://boallen.com/random-numbers.html
+
+function Random(seed) {
+    this._seed = seed % 2147483647;
+    if (this._seed <= 0) this._seed += 2147483646;
+}
+
+Random.prototype.next = function () {
+    this._seed = (this._seed * 16807) & 0xffffffff;
+    return (this._seed - 1) | 0;
+};
+
+var add = false; //by default - not add info, and replace text in div every time
+function gen_canvas(){
+	var BLOCK_SIZE = 1;		//block width, height
+	var GRID_SIZE = 256; 	//blocks width, height in square
+	
+	var CANVAS_SIZE = GRID_SIZE*BLOCK_SIZE;
+
+	var c = document.getElementById('c').getContext('2d');
+	document.getElementById('c').width = CANVAS_SIZE;
+	document.getElementById('c').height = CANVAS_SIZE;
+	
+	//background white color
+	
+	c.fillStyle = "white";
+	//c.fillStyle = "#f8ff75"; //color code
+	c.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+	
+	var rand = new Random(Math.floor(Math.random() * 2147483647));
+	var count = 0;
+	for (var x = 0; x < CANVAS_SIZE; x += BLOCK_SIZE) {
+		for (var y = 0; y < CANVAS_SIZE; y += BLOCK_SIZE) {
+			if (rand.next() < 0) { //fill block by black color.
+				c.fillStyle = "black";
+				//c.fillStyle = "#8753c6"; //color code
+				c.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+				count++;
+			}
+		}
+	}
+	
+	var additional_string = '<br>Black blocks: '+count+', (black blocks)/(all blocks)*100% = '+(count/(GRID_SIZE*GRID_SIZE)*100)+'%';
+	update_div(additional_string, add); //add = true
+	//console.log(count); //display count black blocks.
+}
+</script>
+
+<script src="sha256_randomize_Math.Random.js"></script>
+<script>
+//String function for eventListener. This updating when mouse move.
+//This may be a string.
+//If this was been defined, this called every time when mouse moving...
+var function_name = 'gen_canvas();';
+
+	//if random_salted.js included before, you can uncomment this string to see actual salt:
+	//salt info, then add canvas info.
+function_name = 'var add = true; update_div("New salt: "+salt);'+function_name; //display salt if random_salted.js included.
+
+
+if(typeof function_name !== 'undefined'){
+	//call this function when mouse move
+	//add second event-listener to update by runing function.
+	//First EventListener - in random_salted.js
+	
+	document.addEventListener('mousemove',function(event) {
+			setTimeout(function_name, 0);
+	});
+	
+	//call this function with repeats for each 5 seconds (5000 milliseconds)
+	setInterval(function_name,5000);
+}
+</script>
