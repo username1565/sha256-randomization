@@ -3,9 +3,23 @@
 	analog of this: https://www.random.org/bitmaps/?format=png&width=256&height=256&zoom=1
 -->
 <canvas id='c'></canvas>
-
 <div id="createPNGButton">
-    <button onclick="putImage()">Make Image fixed for saving</button>        
+    <button onclick="putImage()">Make Image fixed for saving</button>
+	
+<!-- visualization randomization-->
+	<img id="cursor" src="./index_files/spin.gif"
+	style="display: none; position: absolute; top: 50%; left: 50%"
+	title="EventListener onmousemove indication
+When salt changed, display this gif for mouse cursor with random coordinates">
+	</img>
+
+	<font title="See more info in the source code sha256_randomize_Math.Random.js">
+		Partial value of salt for modified Math.random() function:
+		<div id="partial_salt_value" style="display: inline; "
+		title="Display partial salt value."></div>
+	</font>
+<!-- end visualization-->
+
 </div>
 <a nohref id="link"><img id="MyPix" title="Result PNG. This can be saved now."></img></a>
 
@@ -39,19 +53,17 @@ Click to download "random.png"';
 
 function update_div(text, add){
   var div = document.getElementById('div');
-  if(div==null){
+  if(div==null){//if div no exists, add this
 	var div = document.createElement('div');
 	div.id = "div";
 	document.getElementById('createPNGButton').appendChild(div);
   }
-  else{
-	if(add){
+	if(add){//if add=true, add text
 		div.innerHTML += text;
 	}
-	else{
+	else{//else replace new
 		div.innerHTML = text;
 	}
-  }
 }
 </script>
 
@@ -73,7 +85,6 @@ Random.prototype.next = function () {
     return (this._seed - 1) | 0;
 };
 
-var add = false; //by default - not add info, and replace text in div every time
 function gen_canvas(){
 	var BLOCK_SIZE = 1;		//block width, height
 	var GRID_SIZE = 256; 	//blocks width, height in square
@@ -105,32 +116,82 @@ function gen_canvas(){
 	
 	var additional_string = '<br>Black blocks: '+count+', (black blocks)/(all blocks)*100% = '+(count/(GRID_SIZE*GRID_SIZE)*100)+'%';
 	update_div(additional_string, add); //add = true
-	//console.log(count); //display count black blocks.
+	//console.log(additional_string, add);
 }
 </script>
 
-<script src="./index_files/sha256_randomize_Math.Random.js"></script>
+
+	<script src="./index_files/sha256_randomize_Math.Random.js"></script>
+
+<!-- 	if this was been added,
+	uncomment var add = true, and function_as_string addition to see salt
+-->
+
 <script>
-//String function for eventListener. This updating when mouse move.
-//This may be a string.
-//If this was been defined, this called every time when mouse moving...
-var function_name = 'gen_canvas();';
+//default variables
+var add = false; //by default - false.
+//This means, no add "salt info" in div,
+//and do replacement in div the text, with canvas info, every time after update canvas. Only canvas info.
+//true - for display full salt, if this is exists.
 
-	//if random_salted.js included before, you can uncomment this string to see actual salt:
-	//salt info, then add canvas info.
-function_name = 'var add = true; update_div("New salt: "+salt);'+function_name; //display salt if random_salted.js included.
+var function_as_string = 'gen_canvas();'; //run generate canvas by default.
+	//If this string was been defined, this called every time or when mouse moving...
+	//using standard Math.random() to generate canvas.
 
-
-if(typeof function_name !== 'undefined'){
-	//call this function when mouse move
-	//add second event-listener to update by runing function.
-	//First EventListener - in random_salted.js
+//default timeout for generate new canvas
+var default_timeout = 5000; //milliseconds
 	
+function run_default(){
+	//by default run two EventListeners: mousemove and touchmove (for multitouch touchpads)
 	document.addEventListener('mousemove',function(event) {
-			setTimeout(function_name, 0);
+		setTimeout(function_as_string, 0);
+	});
+	document.addEventListener('touchmove',function(event) {
+		setTimeout(function_as_string, 0);
 	});
 	
-	//call this function with repeats for each 5 seconds (5000 milliseconds)
-	setInterval(function_name,5000);
+	if(typeof static_timer==='undefined'){	//if this was been undefined - define once
+		eval(function_as_string);												//run first
+		static_timer = setInterval(function_as_string, default_timeout);		//and repeat using default timeout
+	}
 }
+
+function check_included(){
+	//When script is included here available two variables:
+	//dynamic value: var timeout
+	//dynamic value: var salt
+	if(typeof timeout !== 'undefined' && typeof salt !== 'undefined'){		//if both defined
+		//console.log('salt defined: ', salt, ', timeout defined: ', timeout);
+		
+		//if sha256_randomize_Math.Random.js was been included before,
+		//you can uncomment this strings, to see full actual salt.
+		
+		//salt info, then add canvas info.
+		add = true;
+			//true - to display full salt. Else, div will be regenerated again, with canvas date only, after update canvas.
+		function_as_string = 'update_div("New salt: "+salt);'+function_as_string;
+			//display salt if sha256_randomize_Math.Random.js included, and then - generate canvas.
+		
+		//This modified function will be run every time with dynamic timeout or when mouse move,
+		//using default event-listener and timeout 			->			in sha256_randomize_Math.Random.js
+		//see EventListeners funtions here, and function generate(milliseconds)
+		
+		eval(function_as_string); //run this function once at first.
+		//and do nothing...
+	}
+	else{//else, using default event listaner and timeout
+		//console.log('timeout or salt is undefined');
+		run_default();
+	}
+}//this function running once.
+
+//if page often refrashing, this variables can be undefined when script included.
+setTimeout('check_included()', 50); //start this with delay 50 milliseconds
+
+
+
+
+
+
+
 </script>
