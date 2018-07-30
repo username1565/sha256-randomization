@@ -652,20 +652,23 @@ function onMouseStop() {
   //console.log(timeout2);
 };
 
-/*
-var first_run; //move or no move cursor, just define this.
+
+//var first_run; //move or no move cursor, just define this.
 
 //display cursor by first loading page
 if(cursor!==null){ //if this element was geen founded
-	first_run = true; //move by first run
+	//first_run = true; //move by first run
 	
 	cursor.style.display = "block"; //display this
 	
 	//set rand coordinates
 	//randomize cursor coordinates, using window.Crypto.getRandomValues(bytearray);
-	cursor.style.left = getRandomInt_window_crypto(0, window.innerWidth-32) + "px";		//using random width in currend window size (without picture size)
-	cursor.style.top = getRandomInt_window_crypto(0, window.innerHeight-32) + "px";		//using random height values (window resising available)
+	//cursor.style.left = getRandomInt_window_crypto(0, window.innerWidth-32) + "px";		//using random width in currend window size (without picture size)
+	//cursor.style.top = getRandomInt_window_crypto(0, window.innerHeight-32) + "px";		//using random height values (window resising available)
+	
+	cursor.style.left = window.innerWidth-32 + "px";		//using random width in currend window size (without picture size)
+	cursor.style.top = 0 + "px";		//using 0 start height coordinate (window resising available)
+
 	
 	timeout2 = setTimeout( stopped , 500); //timeout to hide div when page reloaded, without moving cursor
 }
-*/
