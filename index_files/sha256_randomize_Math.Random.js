@@ -548,11 +548,16 @@ function onMouseMove(e) {
   hasChanged = true;  
   x = e.pageX;
   y = e.pageY;
-  
+  console.log('onmousemove:', x, y);
 	cursor.style.transition = "";
 	cursor.style.display = "block";
 
-	cursor.style.left = x + 0 + "px"; //align pixels right from cursor
+	//image near mouse cursor
+	//cursor.style.left = x + 0 + "px"; //align pixels right from cursor
+	//cursor.style.top = y + 20 + "px"; //and bottom after cursor
+
+	//image on the right side with y coordinates (resizing available)
+	cursor.style.left = window.innerWidth-32 + "px";		//right current window width
 	cursor.style.top = y + 20 + "px"; //and bottom after cursor
 
 	//randomize cursor coordinates, using window.Crypto.getRandomValues(bytearray);
@@ -573,12 +578,17 @@ function onTouch(e) {
   x = e.targetTouches[0].pageX;
   y = e.targetTouches[0].pageY;
   
+	//image on the right side with y coordinates (resizing available)
+	cursor.style.left = window.innerWidth-32 + "px";		//right current window width
+	cursor.style.top = y + 20 + "px"; //and bottom after cursor  
+  
   //generate salt, using coordinates.
   salt=get_rand_salt(x, y, SHA256(salt.toString(36))); 	//hash from previous salt string as seed for hash random value.
   
   onMouseStop();
 };
 
+/*
 var moving;
 var timeout3,	//to say stop moving
 	timeout4;	//to return image back
@@ -617,20 +627,23 @@ function move_to_right_top(){ //for first page loading page
 	}
 	//else, do nothing...
 }
+*/
 
 var stopped = function() { //when mouse stop moving
   hasChanged = false;
   hasStopped = true;
   if(typeof cursor === 'undefined'){return false;}
   
-  if(moving===false){
+  //if(moving===false){				//move to right top function is commented, so this commented too
 	cursor.style.transition = "";
 	cursor.style.display = "none";
-  }
+  //}
 
+/*
   if(first_run===true){
 	move_to_right_top();
   }
+*/
 };
 
 function onMouseStop() {
@@ -639,7 +652,7 @@ function onMouseStop() {
   //console.log(timeout2);
 };
 
-
+/*
 var first_run; //move or no move cursor, just define this.
 
 //display cursor by first loading page
@@ -655,3 +668,4 @@ if(cursor!==null){ //if this element was geen founded
 	
 	timeout2 = setTimeout( stopped , 500); //timeout to hide div when page reloaded, without moving cursor
 }
+*/
